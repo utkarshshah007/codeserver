@@ -10,7 +10,7 @@ from codes.models import Ticket, Scanner, Redemption
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the codes index.")
+    return redirect('scan-ticket')
 
 
 class ScanTicketView(FormView):
