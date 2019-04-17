@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap Core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <title>Ticket Scanner</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h1 class="mt-2">Scan Ticket</h1>
+          <hr class="mt-0 mb-4">
+          <form method="post">{% csrf_token %}
+              <div class="input-group">
+                <input type="text" placeholder="Enter Ticket Number Here"
+                  {% if code %}
+                  value="{{code}}"
+                  {% endif %}
+                  name="ticket_number" class="textinput textInput form-control" required="" id="id_ticket_number">
+                <div class="input-group-append">
+                  <button id="redeem" type="button submit" class="btn btn-outline-secondary">Redeem</button>
+                  <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="javascript:$('#redeem').trigger('click');">Redeem</a>
+                    <a class="dropdown-item" href="#">Validate</a>
+                  </div>
+                </div>
+              </div>
+
+          </form>
+        </div>
+      </div>
+      {% if ticket %}
+      <div class="row p-3">
+        <div class="card">
+          <h5 class="card-header">
+            Ticket Number: {{ticket.code}}
+          </h5>
+          <div class="row p-3">
+            <div class="col-md-4 border-right align-self-center text-center">
+              {% if redemption %}
+              <i class="far fa-check-circle fa-5x" style="color: Green;"></i>
+              <h4 class="lead font-weight-normal">Successfully redeemed by Web Scanner at {{redemption.redemption_datetime}}</h4>
+              {% else %}
+              <i class="far fa-times-circle fa-5x" style="color: Red;"></i>
+              <h4 class="lead font-weight-normal">This ticket is no longer valid. See history below.</h4>
+              {% endif %}
+            </div>
+            <div class="col-md-8">
+              <dl class="row card-body">
+                <dt class="col-md-7">Issued</dt>
+                <dd class="col-md-5">{{ticket.creation_datetime}}</dd>
+
+                <dt class="col-md-7">Bundle</dt>
+                <dd class="col-md-5">{{ticket.bundle}}</dd>
+
+                <dt class="col-md-7">Expires</dt>
+                <dd class="col-md-5">{{ticket.expiration_date}}</dd>
+
+                <dt class="col-md-7">Use Limit</dt>
+                <dd class="col-md-5">{{ticket.max_uses}} times</dd>
+
+                <dt class="col-md-7">Times Used</dt>
+                <dd class="col-md-5">{{ticket.redemption_set.count}} times</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row p-3">
+        <h4>Redemption History</h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Time</th>
+              <th scope="col">Location</th>
+              <th scope="col">Scanner</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for redemption in ticket.redemption_set.all reversed %}
+            <tr>
+              <th scope="row">{{forloop.revcounter}}</th>
+              <td>{{redemption.redemption_datetime}}</td>
+              <td>{{redemption.redemption_location}}</td>
+              <td>{{redemption.scanner}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
