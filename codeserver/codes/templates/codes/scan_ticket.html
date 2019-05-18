@@ -13,98 +13,175 @@
   </head>
   <body>
     <div class="container">
-      <div class="row">
+      <div class="row" id="scanner-section">
         <div class="col-12">
-          <h1 class="mt-2">Scan Ticket</h1>
-          <hr class="mt-0 mb-4">
-          <form method="post">{% csrf_token %}
-              <div class="input-group">
-                <input type="text" placeholder="Enter Ticket Number Here"
-                  {% if code %}
-                  value="{{code}}"
-                  {% endif %}
-                  name="ticket_number" class="textinput textInput form-control" required="" id="id_ticket_number">
-                <div class="input-group-append">
-                  <button id="redeem" type="button submit" class="btn btn-outline-secondary">Redeem</button>
-                  <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="sr-only">Toggle Dropdown</span>
-                  </button>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" href="javascript:$('#redeem').trigger('click');">Redeem</a>
-                    <a class="dropdown-item" href="#">Validate</a>
-                  </div>
+          <form id="scanForm" action="{% url 'api-scan' %}" method="post">{% csrf_token %}
+            <h1 class="mt-2 d-inline-flex">Scan Ticket
+              <input type="text" placeholder="Scanner ID" name="scanner_id"
+              class="textinput textInput form-control col-3 mx-3
+              align-self-center" required="" id="id_scanner_id">
+            </h1>
+            <hr class="mt-0 mb-4">
+            <div class="input-group">
+              <input type="text" placeholder="Enter Ticket Number Here"
+                name="ticket_number" class="textinput textInput form-control" required="" id="id_ticket_number">
+              <div class="input-group-append">
+                <button id="redeem" type="button submit" class="btn btn-outline-secondary">Redeem</button>
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="javascript:$('#redeem').trigger('click');">Redeem</a>
+                  <a class="dropdown-item" href="#">Validate</a>
                 </div>
               </div>
+            </div>
 
           </form>
         </div>
       </div>
-      {% if ticket %}
-      <div class="row p-3">
-        <div class="card">
+
+      <div id="results-section"></div>
+
+      <div id="no-such-ticket" class="row p-3 invisible">
+        <div class="card w-100">
           <h5 class="card-header">
-            Ticket Number: {{ticket.code}}
           </h5>
           <div class="row p-3">
-            <div class="col-md-4 border-right align-self-center text-center">
-              {% if redemption %}
-              <i class="far fa-check-circle fa-5x" style="color: Green;"></i>
-              <h4 class="lead font-weight-normal">Successfully redeemed by Web Scanner at {{redemption.redemption_datetime}}</h4>
-              {% else %}
+            <div class="col-md-12 align-self-center text-center">
               <i class="far fa-times-circle fa-5x" style="color: Red;"></i>
-              <h4 class="lead font-weight-normal">This ticket is no longer valid. See history below.</h4>
-              {% endif %}
-            </div>
-            <div class="col-md-8">
-              <dl class="row card-body">
-                <dt class="col-md-7">Issued</dt>
-                <dd class="col-md-5">{{ticket.creation_datetime}}</dd>
-
-                <dt class="col-md-7">Bundle</dt>
-                <dd class="col-md-5">{{ticket.bundle}}</dd>
-
-                <dt class="col-md-7">Expires</dt>
-                <dd class="col-md-5">{{ticket.expiration_date}}</dd>
-
-                <dt class="col-md-7">Use Limit</dt>
-                <dd class="col-md-5">{{ticket.max_uses}} times</dd>
-
-                <dt class="col-md-7">Times Used</dt>
-                <dd class="col-md-5">{{ticket.redemption_set.count}} times</dd>
-              </dl>
+              <h4 class="lead font-weight-normal">No ticket with this number exists.</h4>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="row p-3">
-        <h4>Redemption History</h4>
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Time</th>
-              <th scope="col">Location</th>
-              <th scope="col">Scanner</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for redemption in ticket.redemption_set.all reversed %}
-            <tr>
-              <th scope="row">{{forloop.revcounter}}</th>
-              <td>{{redemption.redemption_datetime}}</td>
-              <td>{{redemption.redemption_location}}</td>
-              <td>{{redemption.scanner}}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% endif %}
+      <script id="scan-template" type="text/x-handlebars-template">
+        {% verbatim %}
+        <div id="results-section">
+          <div class="row p-3">
+          <div class="card">
+            <h5 class="card-header">
+              Ticket Number: {{ticket.code}}
+            </h5>
+            <div class="row p-3">
+              <div class="col-md-4 border-right align-self-center text-center">
+                {{#if valid}}
+                <i class="far fa-check-circle fa-5x" style="color: Green;"></i>
+                <h4 class="lead font-weight-normal">Successfully redeemed by Web Scanner at {{#each redemption_list}}{{#if @last}}{{formatTime this.redemption_datetime}}{{/if}}{{/each}}</h4>
+                {{else}}
+                <i class="far fa-times-circle fa-5x" style="color: Red;"></i>
+                <h4 class="lead font-weight-normal">This ticket is no longer valid. See history below.</h4>
+                {{/if}}
+              </div>
+              <div class="col-md-8">
+                <dl class="row card-body">
+                  <dt class="col-md-7">Issued</dt>
+                  <dd class="col-md-5">{{formatDate ticket.creation_datetime}}</dd>
+
+                  <dt class="col-md-7">Bundle</dt>
+                  <dd class="col-md-5">{{safeVal ticket.bundle 'None'}}</dd>
+
+                  <dt class="col-md-7">Expires</dt>
+                  <dd class="col-md-5">{{safeVal ticket.expiration_date 'Never'}}</dd>
+
+                  <dt class="col-md-7">Use Limit</dt>
+                  <dd class="col-md-5">{{safeVal ticket.max_uses 'Unlimited'}} times</dd>
+
+                  <dt class="col-md-7">Times Used</dt>
+                  <dd class="col-md-5">{{safeVal redemption_list.length '0'}} times</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          <div class="row p-3">
+          <h4>Redemption History</h4>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Time</th>
+                <th scope="col">Location</th>
+                <th scope="col">Scanner</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{reverse redemption_list}}
+              {{#each redemption_list}}
+              <tr>
+                <th scope="row">{{rev-counter ../redemption_list @index}}</th>
+                <td>{{formatDate this.redemption_datetime}}</td>
+                <td>{{this.redemption_location}}</td>
+                <td>{{this.scanner.name}}</td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+        </div>
+        {% endverbatim %}
+      </script>
+
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+
+    <script>
+        // wait for the DOM to be loaded
+        $(document).ready(function() {
+          Handlebars.registerHelper('formatDate', function(dateString) {
+              return new Handlebars.SafeString(
+                  moment(dateString).format('MMMM Do YYYY, h:mm a')
+              );
+          });
+
+          Handlebars.registerHelper('formatTime', function(dateString) {
+              return new Handlebars.SafeString(
+                  moment(dateString).format('h:mm a')
+              );
+          });
+
+          Handlebars.registerHelper('safeVal', function (value, safeValue) {
+              var out = value || safeValue;
+              return new Handlebars.SafeString(out);
+          });
+
+          Handlebars.registerHelper('reverse', function (arr) {
+              arr.reverse();
+          });
+
+          Handlebars.registerHelper("rev-counter", function(arr, index)
+          {
+              return arr.length - index;
+          });
+
+          var source   = document.getElementById("scan-template").innerHTML;
+          var template = Handlebars.compile(source);
+
+            // bind 'myForm' and provide a simple callback function
+            $('#scanForm').ajaxForm({
+              url : "{% url 'api-scan' %}", // or whatever
+              headers: {'X-CSRFToken': '{% csrf_token %}'},
+              dataType : 'json',
+              success : function (response) {
+                $("#no-such-ticket").removeClass( "visible" ).addClass( "invisible" );
+                var html = template(response);
+                $('#results-section').replaceWith( html );
+              },
+              error : function (data) {
+                console.log(data)
+                $('#results-section').replaceWith( '<div id="results-section"></div>' );
+                $("#no-such-ticket").removeClass( "invisible" ).addClass( "visible" );
+              }
+            });
+        });
+    </script>
   </body>
 </html>
