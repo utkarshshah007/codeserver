@@ -1,7 +1,5 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.views.generic import TemplateView
-from django.urls import reverse, reverse_lazy
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.views import APIView
@@ -9,9 +7,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 
-from urllib.parse import urlencode
-
-from codes.forms import ScanTicketForm
 from codes.models import Ticket, Scanner, Redemption
 from codes.serializers import TicketSerializer, RedemptionSerializer
 
