@@ -66,3 +66,8 @@ class ScanTicketView(TemplateView):
     Uses the ScanTicketAPIView to scan.
     """
     template_name = 'codes/scan_ticket.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['scanners'] = Scanner.objects.all()
+        return context
