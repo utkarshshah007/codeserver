@@ -1,6 +1,8 @@
 from django.shortcuts import redirect
 from django.views import generic
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,8 +14,8 @@ from codes.forms import CreateTicketsForm
 from codes.serializers import TicketSerializer, RedemptionSerializer
 
 
-def index(request):
-    return redirect('scan-ticket')
+class IndexView(generic.TemplateView):
+    template_name = 'codes/dashboard.html'
 
 
 class ScanTicketAPIView(APIView):

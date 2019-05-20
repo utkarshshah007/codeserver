@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap Core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+
+    <title>TicketServer Dashboard</title>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="margin-bottom: 0; background-color:#f8f8f8;">
+        <a class="navbar-brand" href="{% url 'index' %}">CodeServer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <div class="container">
+      <div id="results-section">
+        <div class="row-12 p-3">
+        <div class="card-deck">
+              <div class="card" style="width: 18rem;">
+                <a href="{% url 'scan-ticket' %}" class='btn btn-outline-secondary p-1'>
+                <div class="card-body">
+                  <div class="row d-block">
+                    <i class="fas fa-barcode fa-7x"></i>
+                  </div>
+                  <div class="row d-block">
+                    <h2>Scan Tickets</h2>
+                    <p class="card-text">Use the Online Scanner</p>
+                  </div>
+                </div>
+                </a>
+              </div>
+
+              <div class="card" style="width: 18rem;">
+                <a href="{% url 'create-tickets' %}" class='btn btn-outline-secondary p-1'>
+                <div class="card-body">
+                  <div class="row d-block">
+                    <i class="fas fa-cloud-upload-alt fa-7x"></i>
+                  </div>
+                  <div class="row d-block">
+                    <h2>Add Tickets</h2>
+                    <p class="card-text">Add One or More Tickets</p>
+                  </div>
+                </div>
+                </a>
+              </div>
+        </div>
+        </div>
+        <hr>
+        <div class="row-12 p-3">
+        <div class="card-deck">
+              <div class="card" style="width: 18rem;">
+                <a href="{% url 'admin:codes_ticket_changelist' %}" class='btn btn-outline-secondary p-1'>
+                <div class="card-body">
+                  <div class="row d-block">
+                    <i class="fas fa-ticket-alt fa-4x"></i>
+                  </div>
+                  <div class="row d-block">
+                    <h4 class='my-2'>Manage Tickets</h4>
+                  </div>
+                </div>
+                </a>
+              </div>
+              <div class="card" style="width: 18rem;">
+                <a href="{% url 'admin:codes_bundle_changelist' %}" class='btn btn-outline-secondary p-1'>
+                <div class="card-body">
+                  <div class="row d-block">
+                    <i class="fas fa-archive fa-4x"></i>
+                  </div>
+                  <div class="row d-block">
+                    <h4 class='my-2'>Manage Bundles</h4>
+                  </div>
+                </div>
+                </a>
+              </div>
+              <div class="card" style="width: 18rem;">
+                <a href="{% url 'admin:codes_scanner_changelist' %}" class='btn btn-outline-secondary p-1'>
+                <div class="card-body">
+                  <div class="row d-block">
+                    <i class="fas fa-mobile-alt fa-4x"></i>
+                  </div>
+                  <div class="row d-block">
+                    <h4 class='my-2'>Manage Scanners</h4>
+                  </div>
+                </div>
+                </a>
+              </div>
+        </div>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/ionicons@4.5.5/dist/ionicons.js"></script>
+
+  </body>
+</html>
