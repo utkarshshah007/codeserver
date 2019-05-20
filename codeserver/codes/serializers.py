@@ -2,6 +2,8 @@ from rest_framework import serializers
 from codes.models import Bundle, Ticket, Scanner, Redemption
 
 class TicketSerializer(serializers.ModelSerializer):
+    bundle = serializers.StringRelatedField()
+
     class Meta:
         model = Ticket
         fields = ('code', 'creation_datetime', 'bundle',

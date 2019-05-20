@@ -1,13 +1,14 @@
 from django.shortcuts import redirect
-from django.views.generic import TemplateView
+from django.views import generic
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.renderers import JSONRenderer
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 
 from codes.models import Ticket, Scanner, Redemption
+from codes.forms import CreateTicketsForm
 from codes.serializers import TicketSerializer, RedemptionSerializer
 
 
@@ -55,7 +56,7 @@ class ScanTicketAPIView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class ScanTicketView(TemplateView):
+class ScanTicketView(generic.TemplateView):
     """
     An Example Implementation of an API Client Scanner.
     Uses the ScanTicketAPIView to scan.
@@ -66,3 +67,46 @@ class ScanTicketView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['scanners'] = Scanner.objects.all()
         return context
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class CreateTicketsView(generic.edit.FormView):
+    template_name = 'codes/create_tickets.html'
+    form_class = CreateTicketsForm
+    success_url = '/admin/codes/ticket/'
+
+    """
+    Requires:
+    - a list of ticket_numbers
+    # TODO:
+    OR
+    - generate = True
+    - num_to_generate >= 1
+
+    Optional:
+    - bundle
+    - description
+    - expiration_date
+    - max_uses
+
+    Registers (TODO: or generates) new tickets with the info specified.
+    """
+
+    def form_valid(self, form):
+        # Split into individual ticket numbers
+        str = form.cleaned_data["ticket_numbers"]
+        ticket_numbers = [s.strip() for s in str.split(',')]
+
+        # Get any additional info
+        keys = ["bundle","description","expiration_date","max_uses"]
+        kwargs = {k: v for k, v in form.cleaned_data.items() if (
+                        k in keys and v is not None)}
+
+        # TODO: Generate tickets if required
+
+        # Create tickets
+        for ticket_number in ticket_numbers:
+            Ticket.objects.create(code=ticket_number, **kwargs)
+
+        # Return
+        return super().form_valid(form)
