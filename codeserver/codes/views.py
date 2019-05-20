@@ -17,6 +17,10 @@ from codes.serializers import TicketSerializer, RedemptionSerializer
 class IndexView(generic.TemplateView):
     template_name = 'codes/dashboard.html'
 
+class DocView(generic.View):
+    def get(self, request):
+        return redirect("https://documenter.getpostman.com/view/144103/S1M3wm34")
+
 
 class ScanTicketAPIView(APIView):
     renderer_classes = (JSONRenderer, )
