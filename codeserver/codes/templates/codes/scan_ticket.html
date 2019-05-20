@@ -12,6 +12,14 @@
     <title>Ticket Scanner</title>
   </head>
   <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="margin-bottom: 0; background-color:#f8f8f8;">
+        <a class="navbar-brand" href="{% url 'index' %}">CodeServer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
     <div class="container">
       <div class="row" id="scanner-section">
         <div class="col-12">
@@ -87,7 +95,7 @@
                   <dd class="col-md-5">{{safeVal ticket.bundle 'None'}}</dd>
 
                   <dt class="col-md-7">Expires</dt>
-                  <dd class="col-md-5">{{safeVal ticket.expiration_date 'Never'}}</dd>
+                  <dd class="col-md-5">{{safeVal (formatDate ticket.expiration_date) 'Never'}}</dd>
 
                   <dt class="col-md-7">Use Limit</dt>
                   <dd class="col-md-5">{{safeVal ticket.max_uses 'Unlimited'}} times</dd>
